@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/product_name"
+        android:text="aqua"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/order_qty"
+            android:text="10 items"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_width="0dp"
+            android:layout_weight=".25"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/order_price"
+            android:text="Rp. 0"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_width="0dp"
+            android:layout_weight=".35"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/order_total"
+            android:text="RP. 0"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_width="0dp"
+            android:layout_weight=".4"
+            android:layout_height="wrap_content"
+            android:textColor="@color/green"
+            android:gravity="right"/>
+    </LinearLayout>
+</LinearLayout>

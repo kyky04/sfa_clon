@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.pertaminalubricants.speedup.fragment.FragmentHome">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.pertaminalubricants.speedup.fragment.FragmentHome">
+
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_margin="8dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:text=""
+                    android:textColor="#222"
+                    android:textSize="15dp" />
+
+
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+
+        <LinearLayout
+            android:id="@+id/row_1"
+            android:layout_below="@id/card_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/colom_1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="Street"
+                android:layout_gravity="left"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="#fff"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#6377ed"
+                    android:layout_margin="5dp"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/icon_call"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/call"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/title_colom1"
+                        android:layout_below="@id/icon_call"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:textColor="#FFF"
+                        android:text="10 Rute "
+                        android:background="#374eda"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/colom_2"
+                android:padding="10dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="456546546"
+                android:background="#fff"
+                android:layout_gravity="right"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#6377ed"
+                    android:layout_margin="5dp"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/icon_update"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/update"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/title_colom2"
+                        android:layout_below="@+id/icon_update"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:text="Update Data 5"
+                        android:textColor="#FFF"
+                        android:background="#374eda"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/row_2"
+            android:layout_below="@id/row_1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/toko_tutup_sementara"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="left"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#6377ed"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/icon_cp"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/clock"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/value_tutup_sementara"
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/icon_cp"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:background="#374eda"
+                        android:text="Tutup Sementara : 3 "
+                        android:textColor="#fff"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/toko_tutup_permanen"
+                android:padding="10dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="456546546"
+                android:layout_gravity="right"
+                android:background="#8800FF00"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#f53131"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/icon_cpe"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/permanen"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/value_tutup_permanens"
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/icon_cpe"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:background="#ca1313"
+                        android:text="Tutup Permanen : 3 "
+                        android:textColor="#fff"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row_3"
+            android:layout_below="@id/row_2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/berubah_bisnis"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="Street"
+                android:layout_gravity="left"
+                android:background="#88FF0000"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#f53131"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/icon_cpee"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/change"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/value_isbisnis"
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/icon_cpee"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:background="#ca1313"
+                        android:text="Berubah Bisnis: 3 "
+                        android:textColor="#fff"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/tidak_diketemukan"
+                android:padding="10dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="456546546"
+                android:layout_gravity="right"
+                android:background="#8800FF00"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#f53131"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/icon_cpeee"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/not_found"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/value_nf"
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/icon_cpeee"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:background="#ca1313"
+                        android:text="Not Found : 3 "
+                        android:textColor="#fff"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row_4"
+            android:layout_below="@id/row_3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/merchandising"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="Street"
+                android:layout_gravity="left"
+                android:background="#88FF0000"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#0c9813"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/icon_cpeeew"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/noo"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/value_isnoos"
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/icon_cpeeew"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:background="#035f08"
+                        android:text="NOO : 3 "
+                        android:textColor="#fff"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/toko_noo"
+                android:padding="10dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="456546546"
+                android:layout_gravity="right"
+                android:background="#8800FF00"
+                android:layout_margin="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="#0c9813"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/icon_cpeex"
+                        android:layout_width="80dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/merchandise"
+                        android:padding="10dp"
+                        android:layout_height="80dp" />
+                    <TextView
+                        android:id="@+id/value_ismersing"
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/icon_cpeex"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:padding="8dp"
+                        android:background="#035f08"
+                        android:text="Merchandising : 3 "
+                        android:textColor="#fff"
+                        android:textSize="15dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+
+        </LinearLayout>
+
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/card_views"
+            android:layout_below="@id/row_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_margin="8dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/sync"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:padding="10dp"
+                    android:text="Sinkron Rute"
+                    />
+
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+
+    </RelativeLayout>
+</ScrollView>

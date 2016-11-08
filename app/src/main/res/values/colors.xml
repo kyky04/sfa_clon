@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>-->
+
+    <color name="colorPrimary">#00acc1</color>
+	<color name="color_primary">#f50f35</color>
+    <color name="color_primary_dark">#f81238</color>
+    <!--<color name="color_primary">#e64e40</color>-->
+    <!--<color name="color_primary_dark">#c94438</color>-->
+    <color name="colorPrimaryDark">#00838f</color>
+    <color name="activity_main_row_title_color">#cccccc</color>
+    <color name="windowBackground">#FFFFFF</color>
+
+    <color name="cyan">#00FFFF</color>
+    <color name="grey_1">#e2e2e2</color>
+    <color name="grey_2">#00acc1</color>
+    <color name="grey_3">#006064</color>
+    <color name="gray">#bdbdbd</color>
+    <color name="textDark">#006064</color>
+    <color name="textPrimary">#00acc1</color>
+    <color name="textPrimaryLight">#99d8e0</color>
+    <color name="black">#000</color>
+    <color name="orange">#0097a7</color>
+    <color name="green">#228B22</color>
+    <color name="white">#fefefe</color>
+
+    <color name="genre">#666666</color>
+    <color name="year">#888888</color>
+    <color name="list_divider">#d9d9d9</color>
+    <color name="list_row_start_color">#ffffff</color>
+    <color name="list_row_end_color">#ffffff</color>
+    <color name="list_row_hover_start_color">#ebeef0</color>
+    <color name="list_row_hover_end_color">#ebeef0</color>
+</resources>
