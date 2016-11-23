@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.pertaminalubricants.mysfa.R;
+import com.pertaminalubricants.mysfa.model.CustomerProspectRealm;
 import com.pertaminalubricants.mysfa.model.CustomerRealm;
 
 import java.util.List;

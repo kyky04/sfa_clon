@@ -8,5 +8,9 @@
         android:title="@string/github"
         android:icon="@mipmap/ic_github"
         app:showAsAction="withText|always" />
+    <item
+        android:id="@+id/send"
+        android:title="@string/github"
+        android:icon="@drawable/ic_ab_refresh"/>
 
 </menu>

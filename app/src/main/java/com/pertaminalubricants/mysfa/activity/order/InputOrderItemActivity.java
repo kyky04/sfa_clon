@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -22,10 +23,12 @@ import com.pertaminalubricants.mysfa.R;
 import com.pertaminalubricants.mysfa.adapter.OrderItemListAdapter;
 import com.pertaminalubricants.mysfa.adapter.StockAutoCompleteAdapter;
 import com.pertaminalubricants.mysfa.library.Prefs;
+import com.pertaminalubricants.mysfa.library.SessionManager;
 import com.pertaminalubricants.mysfa.model.CustomerRealm;
 import com.pertaminalubricants.mysfa.model.OrderDetailTmp;
 import com.pertaminalubricants.mysfa.model.Ordertmp;
 import com.pertaminalubricants.mysfa.model.StockRealm;
+import com.pertaminalubricants.mysfa.model.StockResponse;
 import com.pertaminalubricants.mysfa.realm.RealmController;
 
 import java.text.DecimalFormat;
@@ -43,20 +46,17 @@ import io.realm.RealmResults;
 
 public class InputOrderItemActivity extends AppCompatActivity {
 
-    private ListView list_view;
-    private ListAdapter orderAdapter;
-    private Ordertmp order;
     private Realm realm;
-    private List<OrderDetailTmp> listOrderDetails = new ArrayList<OrderDetailTmp>();
-    private FloatingActionButton fabNewOrder;
-    private int idOrder = 0;
-    private EditText etItem,etItemId, etItemCd, etItemNm, etItemMaterial, etPrice, etQty, etQtyAvailable;
+    private String idDetail;
+    private OrderDetailTmp detail;
+    private EditText etItem,etItemId, etItemCd, etItemNm, etItemMaterial, etItemGWU, etItemSecondary, etPrice, etQty, etQtyAvailable;
     private AutoCompleteTextView acStock;
     private TextView tvSubTotal;
     private Context ctx;
     private View mView;
-    private View forsnack;
+    private SessionManager session;
     private Button btCancel, btSave;
+    private DecimalFormat df = new DecimalFormat("###,###.##");
 
     public InputOrderItemActivity() {
         // Required empty public constructor
@@ -69,11 +69,7 @@ public class InputOrderItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_input_order_item);
 
         ctx = getBaseContext();
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            idOrder = Integer.parseInt(extras.getString("id"));
-        }
-
+        session = new SessionManager(ctx);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this)
                 .name(Realm.DEFAULT_REALM_NAME)
                 .schemaVersion(0)
@@ -83,19 +79,17 @@ public class InputOrderItemActivity extends AppCompatActivity {
         this.realm = RealmController.with(this).getRealm();
 
         if (!Prefs.with(this).getPreLoad()) {
-            setData();
+
         }
 
-        // refresh the realm instance
         RealmController.with(this).refresh();
-        // get all persisted objects
-        // create the helper adapter and notify data set changes
-        // changes will be reflected automatically
 
         etItemId = (EditText) findViewById(R.id.et_order_item_id);
         etItemCd = (EditText) findViewById(R.id.et_order_item_cd);
         etItemNm = (EditText) findViewById(R.id.et_order_item_nm);
         etItemMaterial = (EditText) findViewById(R.id.et_order_item_material);
+        etItemGWU = (EditText) findViewById(R.id.et_order_item_gwu);
+        etItemSecondary = (EditText) findViewById(R.id.et_order_item_secondary);
 //        etItem = (EditText) findViewById(R.id.et_order_item);
 //        etItem.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -113,24 +107,31 @@ public class InputOrderItemActivity extends AppCompatActivity {
         tvSubTotal = (TextView) findViewById(R.id.tv_sub_total);
         tvSubTotal.setText("Rp. 0");
 
-        RealmResults<StockRealm> result2 = RealmController.with(this).getAllStock();
+//        RealmResults<StockRealm> result2 = RealmController.with(this).getAllStock();
         acStock = (AutoCompleteTextView)findViewById(R.id.autoComplete);
-        acStock.setAdapter(new StockAutoCompleteAdapter(getBaseContext(), result2));
+        acStock.setThreshold(1);
+
+//        acStock.setAdapter(new StockAutoCompleteAdapter(getBaseContext(), session));
+        StockAutoCompleteAdapter adapter = new StockAutoCompleteAdapter(this, R.layout.activity_input_order_item, android.R.id.text1, new ArrayList<StockResponse>(), session);
+        acStock.setAdapter(adapter);
+
         if (acStock != null) {
             if (acStock.getAdapter() != null) {
-//                acCustomer.setAdapter(adapter);
                 acStock.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                     @Override
                     public void onItemClick(AdapterView<?> adapterView,
                                             View view, int position, long id) {
-                        StockRealm tmp = (StockRealm) adapterView.getItemAtPosition(position);
-                        etItemId.setText(String.valueOf(tmp.getId()));
-                        etItemCd.setText(tmp.getCode());
-                        etItemNm.setText(tmp.getName());
-                        acStock.setText(tmp.getCode()+" - "+tmp.getName());
+                        StockResponse tmp = (StockResponse) adapterView.getItemAtPosition(position);
+                        etItemId.setText(String.valueOf(tmp.getMaterial().getId()));
+                        etItemCd.setText(tmp.getMaterial().getCode());
+                        etItemNm.setText(tmp.getMaterial().getName());
+                        etItemMaterial.setText(String.valueOf(tmp.getIdMaterial()));
+                        etItemGWU.setText(String.valueOf(tmp.getMaterial().getGrossWeightUom()));
+                        etItemSecondary.setText("0"); //di hardcode dulu
+                        etQtyAvailable.setText(String.valueOf(tmp.getQty()));
+                        acStock.setText(tmp.getMaterial().getCode()+" - "+tmp.getMaterial().getName());
                     }
-
                 });
             }
         }
@@ -140,7 +141,6 @@ public class InputOrderItemActivity extends AppCompatActivity {
 
             }
             public void afterTextChanged(Editable editable) {
-                DecimalFormat df = new DecimalFormat("###,###.##");
                 try {
                     Double price = Double.parseDouble(etPrice.getText().toString());
                     int qty = Integer.parseInt(etQty.getText().toString());
@@ -160,7 +160,6 @@ public class InputOrderItemActivity extends AppCompatActivity {
 
             }
             public void afterTextChanged(Editable editable) {
-                DecimalFormat df = new DecimalFormat("###,###.##");
                 try {
                     Double price = Double.parseDouble(etPrice.getText().toString());
                     int qty = Integer.parseInt(etQty.getText().toString());
@@ -180,10 +179,6 @@ public class InputOrderItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 save();
-
-//                if (cekValid()){
-//                    doChangePassword();
-//                }
             }
         });
 
@@ -194,67 +189,39 @@ public class InputOrderItemActivity extends AppCompatActivity {
                 finish();
             }
         });
-//        fabNewOrder = (FloatingActionButton) findViewById(R.id.button_save_item);
-//        fabNewOrder.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                save();
-//
-////                if (cekValid()){
-////                    doChangePassword();
-////                }
-//            }
-//        });
 
-//        forsnack = getContentView();
-
+        initData();
     }
 
-    public void setData(){
+    public void initData(){
 
-//        Ordertmp orderTmp = new Ordertmp();
-//        orderTmp.setId(UUID.randomUUID().toString());
-//        orderTmp.setCustId("1");
-//        orderTmp.setTax("4");
-//        orderTmp.setDate(new Date());
-//
-//        ArrayList<OrderDetailTmp> listOrderDetail = new ArrayList<>();
-//
-//        OrderDetailTmp detail = new OrderDetailTmp();
-//        detail.setId(UUID.randomUUID().toString());
-//        detail.setOrderId(orderTmp.getId());
-//        detail.setProduct("Aqua");
-//        detail.setPrice(2000.00);
-//        detail.setQty(2);
-//        detail.setTotal(4000.00);
-//        listOrderDetail.add(detail);
-//
-//        detail = new OrderDetailTmp();
-//        detail.setId(UUID.randomUUID().toString());
-//        detail.setOrderId(orderTmp.getId());
-//        detail.setProduct("Sari Roti");
-//        detail.setPrice(5000.00);
-//        detail.setQty(5);
-//        detail.setTotal(25000.00);
-//        listOrderDetail.add(detail);
-//
-//        for (OrderDetailTmp b : listOrderDetail) {
-//            // Persist your data easily
-//            realm.beginTransaction();
-//            realm.copyToRealm(b);
-//            realm.commitTransaction();
-//        }
-//
-//        Prefs.with(this).setPreLoad(true);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            idDetail = extras.getString("id");
+            detail = RealmController.with(this).getOrderDetailTmp(idDetail);
+            if(detail != null){
+                etPrice.setText(df.format(detail.getPrice()).toString().replace(",", ""));
+                etQty.setText(String.valueOf(detail.getQty()));
+                tvSubTotal.setText("Rp. "+df.format(detail.getTotal()).toString().replace(",", "."));
+
+                etItemId.setText(detail.getProductId());
+                etItemCd.setText(detail.getProductCode());
+                etItemNm.setText(detail.getProductName());
+                etItemMaterial.setText(detail.getProductMaterial());
+                etItemGWU.setText(detail.getProductGrossWeightUom());
+                etItemSecondary.setText(String.valueOf(detail.getProductSupplyBySecondary()));
+                acStock.setText(detail.getProductCode()+"-"+detail.getProductName());
+            }
+        }
     }
 
 
 
     public boolean validation(){
-//        if (etItem.getText().toString().length() == 0){
-//            Snackbar.make(mView,"Item is required", Snackbar.LENGTH_SHORT).show();
-//            return false;
-//        }
+        if (acStock.getText().toString().length() == 0){
+            Snackbar.make(mView,"Item is required", Snackbar.LENGTH_SHORT).show();
+            return false;
+        }
         if (etItemId.getText().toString().length() == 0){
             Snackbar.make(mView,"Item is required. Please Select Item", Snackbar.LENGTH_SHORT).show();
             return false;
@@ -264,23 +231,35 @@ public class InputOrderItemActivity extends AppCompatActivity {
         }else if (etPrice.getText().toString().length() == 0){
             Snackbar.make(mView,"Price is required", Snackbar.LENGTH_SHORT).show();
             return false;
+        }else if (Integer.parseInt(etQty.getText().toString()) > Integer.parseInt(etQtyAvailable.getText().toString())){
+            Snackbar.make(mView,"Max allowed quantity is : " + etQtyAvailable.getText().toString(), Snackbar.LENGTH_SHORT).show();
+            return false;
         }
+
         return true;
     }
 
     public void save(){
         if(validation()) {
-            OrderDetailTmp tmp = new OrderDetailTmp();
-            tmp.setId(UUID.randomUUID().toString());
-            tmp.setQty(Integer.parseInt(etQty.getText().toString()));
-            tmp.setProductName(etItemNm.getText().toString());
-            tmp.setProductId(etItemId.getText().toString());
-            tmp.setProductMaterial(etItemMaterial.getText().toString());
-            tmp.setProductCode(etItemCd.getText().toString());
-            tmp.setPrice(Double.parseDouble(etPrice.getText().toString()));
-            tmp.setTotal(tmp.getPrice() * tmp.getQty());
-            realm.beginTransaction();
-            realm.copyToRealm(tmp);
+
+            if(detail == null){
+                detail = new OrderDetailTmp();
+                detail.setId(UUID.randomUUID().toString());
+            }
+
+            if(!realm.isInTransaction()){
+                realm.beginTransaction();
+            }
+            detail.setQty(Integer.parseInt(etQty.getText().toString()));
+            detail.setProductName(etItemNm.getText().toString());
+            detail.setProductId(etItemId.getText().toString());
+            detail.setProductMaterial(etItemMaterial.getText().toString());
+            detail.setProductCode(etItemCd.getText().toString());
+            detail.setProductGrossWeightUom(etItemGWU.getText().toString());
+            detail.setProductSupplyBySecondary(Integer.parseInt(etItemSecondary.getText().toString()));
+            detail.setPrice(Long.parseLong(etPrice.getText().toString()));
+            detail.setTotal(detail.getPrice() * detail.getQty());
+            realm.copyToRealmOrUpdate(detail);
             realm.commitTransaction();
             Intent i = new Intent();
             i = new Intent(InputOrderItemActivity.this, InputOrderInOutActivity.class);
@@ -288,14 +267,6 @@ public class InputOrderItemActivity extends AppCompatActivity {
             i.putExtra("save", true);
             finish();
         }
-    }
-
-    public ListAdapter getListAdapter() {
-        order = RealmController.with(this).getOrderTmp();
-        RealmResults<OrderDetailTmp> listCustomer = RealmController.with(this).getOrderDetailTmps();
-        return new OrderItemListAdapter(this, listCustomer);
-
-//        return new OrderInOutListAdapter(this.getActivity(), new ArrayList<OrderInOut>());
     }
 
     @Override

@@ -21,9 +21,12 @@ import com.pertaminalubricants.mysfa.R;
 import com.pertaminalubricants.mysfa.library.Prefs;
 import com.pertaminalubricants.mysfa.library.SessionManager;
 import com.pertaminalubricants.mysfa.listener.OnSwipeTouchListener;
+import com.pertaminalubricants.mysfa.model.ContractResponse;
+import com.pertaminalubricants.mysfa.model.CustomerProspectRealm;
 import com.pertaminalubricants.mysfa.model.CustomerRealm;
 import com.pertaminalubricants.mysfa.model.CustomerResponse;
 import com.pertaminalubricants.mysfa.model.LoginInfo;
+import com.pertaminalubricants.mysfa.model.MaterialRealm;
 import com.pertaminalubricants.mysfa.model.StockRealm;
 import com.pertaminalubricants.mysfa.model.StockResponse;
 import com.pertaminalubricants.mysfa.realm.RealmController;
@@ -32,6 +35,11 @@ import com.pertaminalubricants.mysfa.rest.LoginService;
 import com.pertaminalubricants.mysfa.rest.SalesService;
 import com.pertaminalubricants.mysfa.rest.ServiceGenerator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import io.realm.Realm;
@@ -150,17 +158,81 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loadInitData(){
 //        if (session.getLoadCustomer() != 1) {
+
+            JSONObject filterContract = new JSONObject();
+            JSONObject where = new JSONObject();
             CustomerService apiService = ServiceGenerator.createService(CustomerService.class);
-            Call<List<CustomerResponse>> call = apiService.getAllCustomer(session.getToken());
+            try {
+//                {"where":{"id_distributor":51, "id_salesman":14}, "include":{"relation":"customer", "where":{"name": {"like":"%SAMPLE%"}}}}
+                where.put("id_distributor",session.getDistributor());
+                Log.d("mysfa", "session : "+session.getDistributor());
+                where.put("id_salesman",session.getID());
+                filterContract.put("where",where);
+                filterContract.put("include","customer");
+                Log.d("mysfa", "filterContract : "+filterContract.toString());
+                Call<List<ContractResponse>> call = apiService.getAllContract(session.getToken(), URLEncoder.encode(filterContract.toString(), "UTF-8"));
+                call.enqueue(new Callback<List<ContractResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<ContractResponse>> call, Response<List<ContractResponse>> response) {
+                        if(response.code() == 200) {
+                            session.updateLoadCustomer(1);
+                            RealmController.with(LoginActivity.this).clearCustomer();
+                            List<ContractResponse> cusRes = response.body();
+                            for(ContractResponse contract : cusRes){
+                                CustomerResponse cust = contract.getCustomer();
+                                CustomerRealm c = new CustomerRealm();
+                                c.setId(cust.getId());
+                                c.setCode(cust.getCode());
+                                c.setName(cust.getName());
+                                c.setAddress1(cust.getAddress1());
+                                c.setPhone(cust.getPhone());
+                                c.setFax(cust.getFax());
+                                c.setLatitude(cust.getLatitude());
+                                c.setLongitude(cust.getLongitude());
+                                c.setActive(cust.getActive());
+                                c.setIsDeleted(cust.getIsDeleted());
+                                c.setCreatedAt(cust.getCreatedAt());
+                                c.setUpdatedAt(cust.getUpdatedAt());
+                                c.setIdRegion(cust.getIdRegion());
+                                c.setIdAccount(cust.getIdAccount());
+                                realm.beginTransaction();
+                                realm.copyToRealm(c);
+                                realm.commitTransaction();
+                            }
+
+                            Prefs.with(ctx).setPreLoad(true);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<ContractResponse>> call, Throwable t) {
+                        Log.e("sales", t.toString());
+                    }
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+        filterContract = new JSONObject();
+        where = new JSONObject();
+        CustomerService apiService2 = ServiceGenerator.createService(CustomerService.class);
+        try {
+            where.put("id_salesman",session.getID());
+            where.put("status","PROSPECT");
+            filterContract.put("where",where);
+            Log.d("sfa", filterContract.toString());
+            Call<List<CustomerResponse>> call = apiService.getAllCustomerProspect(session.getToken(), URLEncoder.encode(filterContract.toString(), "UTF-8"));
             call.enqueue(new Callback<List<CustomerResponse>>() {
                 @Override
                 public void onResponse(Call<List<CustomerResponse>> call, Response<List<CustomerResponse>> response) {
                     if(response.code() == 200) {
                         session.updateLoadCustomer(1);
-                        RealmController.with(LoginActivity.this).clearCustomer();
+                        RealmController.with(LoginActivity.this).clearCustomerProspect();
                         List<CustomerResponse> cusRes = response.body();
                         for(CustomerResponse cust : cusRes){
-                            CustomerRealm c = new CustomerRealm();
+                            CustomerProspectRealm c = new CustomerProspectRealm();
                             c.setId(cust.getId());
                             c.setCode(cust.getCode());
                             c.setName(cust.getName());
@@ -189,47 +261,86 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e("sales", t.toString());
                 }
             });
-
-        SalesService apiService2 = ServiceGenerator.createService(SalesService.class);
-        Call<List<StockResponse>> call2 = apiService2.getAllStock(session.getToken());
-        call2.enqueue(new Callback<List<StockResponse>>() {
-            @Override
-            public void onResponse(Call<List<StockResponse>> call, Response<List<StockResponse>> response) {
-                if(response.code() == 200) {
-                    session.updateLoadCustomer(1);
-                    RealmController.with(LoginActivity.this).clearStock();
-                    List<StockResponse> stockRes = response.body();
-                    for(StockResponse stock : stockRes){
-                        StockRealm c = new StockRealm();
-                        c.setId(stock.getId());
-                        c.setCode(stock.getCode());
-                        c.setName(stock.getName());
-                        c.setCreatedAt(stock.getCreatedAt());
-                        c.setUpdatedAt(stock.getUpdatedAt());
-                        c.setCreatedBy(stock.getCreatedBy());
-                        c.setModifiedBy(stock.getModifiedBy());
-                        c.setQty(stock.getQty());
-                        c.setStatus(stock.getStatus());
-                        c.setIdDistributor(stock.getIdDistributor());
-                        c.setIdMaterial(stock.getIdMaterial());
-                        c.setIdCustomer(stock.getIdCustomer());
-                        c.setIdSite(stock.getIdSite());
-
-                        realm.beginTransaction();
-                        realm.copyToRealm(c);
-                        realm.commitTransaction();
-                    }
-
-                    Prefs.with(ctx).setPreLoad(true);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<StockResponse>> call, Throwable t) {
-                Log.e("sales", t.toString());
-            }
-        });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+//        JSONObject filter = new JSONObject();
+//        JSONObject where = new JSONObject();
+//        try {
+////            where.put("id_distributor",session.getDistributor());
+////            filter.put("where",where);
+//            filter.put("include","material");
+//            SalesService apiService2 = ServiceGenerator.createService(SalesService.class);
+//            Call<List<StockResponse>> call2 = apiService2.getAllStock(session.getToken(), URLEncoder.encode(filter.toString(), "UTF-8"));
+//            call2.enqueue(new Callback<List<StockResponse>>() {
+//                @Override
+//                public void onResponse(Call<List<StockResponse>> call, Response<List<StockResponse>> response) {
+//                    if(response.code() == 200) {
+//    //                    session.updateLoadSto(1);
+//                        RealmController.with(LoginActivity.this).clearStock();
+//                        List<StockResponse> stockRes = response.body();
+//                        for(StockResponse stock : stockRes){
+//                            StockRealm c = new StockRealm();
+//                            c.setId(stock.getId());
+//                            c.setCode(stock.getMaterial().getCode());
+//                            c.setName(stock.getMaterial().getName());
+//                            c.setCreatedAt(stock.getCreatedAt());
+//                            c.setUpdatedAt(stock.getUpdatedAt());
+//                            c.setCreatedBy(stock.getCreatedBy());
+//                            c.setModifiedBy(stock.getModifiedBy());
+//                            c.setQty(stock.getQty());
+//                            c.setStatus(stock.getStatus());
+//                            c.setIdDistributor(stock.getIdDistributor());
+//                            c.setIdMaterial(stock.getIdMaterial());
+//                            Log.d("sfa","id_material : "+stock.getIdMaterial());
+//                            c.setIdCustomer(stock.getIdCustomer());
+//                            c.setIdSite(stock.getIdSite());
+//
+//                            c.setMaterial(stock.getMaterial().getMaterial());
+//                            c.setMaterialDesc(stock.getMaterial().getMaterialDesc());
+//                            c.setUom(stock.getMaterial().getUom());
+//                            c.setGrossWeight(stock.getMaterial().getGrossWeight());
+//                            c.setGrossWeightUom(stock.getMaterial().getGrossWeightUom());
+//                            c.setIntensifYear(stock.getMaterial().getIntensifYear());
+//                            c.setPackaging(stock.getMaterial().getPackaging());
+//
+////                            MaterialRealm d = new MaterialRealm();
+////                            d.setId(stock.getMaterial().getId());
+////                            d.setCode(stock.getMaterial().getCode());
+////                            d.setName(stock.getMaterial().getName());
+////                            d.setMaterial(stock.getMaterial().getMaterial());
+////                            d.setMaterialDesc(stock.getMaterial().getMaterialDesc());
+////                            d.setUom(stock.getMaterial().getUom());
+////                            d.setGrossWeight(stock.getMaterial().getGrossWeight());
+////                            d.setGrossWeightUom(stock.getMaterial().getGrossWeightUom());
+////                            d.setIntensifYear(stock.getMaterial().getIntensifYear());
+////                            d.setPackaging(stock.getMaterial().getPackaging());
+////                            d.setCreatedAt(stock.getMaterial().getCreatedAt());
+////                            d.setUpdatedAt(stock.getMaterial().getUpdatedAt());
+////                            c.setMaterial(d);
+//
+//                            realm.beginTransaction();
+//                            realm.copyToRealm(c);
+//                            realm.commitTransaction();
+//                        }
+//
+//                        Prefs.with(ctx).setPreLoad(true);
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<List<StockResponse>> call, Throwable t) {
+//                    Log.e("sales", t.toString());
+//                }
+//            });
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
 //        }
+////        }
 
     }
     public static int getColorWithAlpha(int color, float ratio) {
@@ -249,11 +360,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void openDialog(){
-//        dialog = new ProgressDialog(ctx);
-////        dialog.setTitle("Login Process");
-//        dialog.setMessage("Please wait...");
-//        dialog.show();
-        dialog = ProgressDialog.show(this,"","Please wait...",false,false);
+        dialog = ProgressDialog.show(this,"Processing","Please wait...",false,false);
     }
 
     protected void onRestart() {

@@ -26,6 +26,15 @@ public class StockRealm extends RealmObject {
     private int idCustomer;
     private int idSite;
 
+    private String material;
+    private String materialDesc;
+    private String uom;
+    private String grossWeight;
+    private String grossWeightUom;
+    private String intensifYear;
+    private String packaging;
+//    private MaterialRealm material;
+
     public int getId() {
         return id;
     }
@@ -128,5 +137,69 @@ public class StockRealm extends RealmObject {
 
     public void setIdSite(int idSite) {
         this.idSite = idSite;
+    }
+//
+//    public MaterialRealm getMaterial() {
+//        return material;
+//    }
+//
+//    public void setMaterial(MaterialRealm material) {
+//        this.material = material;
+//    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public String getMaterialDesc() {
+        return materialDesc;
+    }
+
+    public void setMaterialDesc(String materialDesc) {
+        this.materialDesc = materialDesc;
+    }
+
+    public String getUom() {
+        return uom;
+    }
+
+    public void setUom(String uom) {
+        this.uom = uom;
+    }
+
+    public String getGrossWeight() {
+        return grossWeight;
+    }
+
+    public void setGrossWeight(String grossWeight) {
+        this.grossWeight = grossWeight;
+    }
+
+    public String getGrossWeightUom() {
+        return grossWeightUom;
+    }
+
+    public void setGrossWeightUom(String grossWeightUom) {
+        this.grossWeightUom = grossWeightUom;
+    }
+
+    public String getIntensifYear() {
+        return intensifYear;
+    }
+
+    public void setIntensifYear(String intensifYear) {
+        this.intensifYear = intensifYear;
+    }
+
+    public String getPackaging() {
+        return packaging;
+    }
+
+    public void setPackaging(String packaging) {
+        this.packaging = packaging;
     }
 }

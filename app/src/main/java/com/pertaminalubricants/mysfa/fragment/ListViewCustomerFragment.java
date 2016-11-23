@@ -1,15 +1,12 @@
 package com.pertaminalubricants.mysfa.fragment;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,21 +18,26 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.pertaminalubricants.mysfa.R;
-import com.pertaminalubricants.mysfa.activity.LoginActivity;
 import com.pertaminalubricants.mysfa.activity.customer.InputCustomerActivity;
 import com.pertaminalubricants.mysfa.activity.order.InputOrderInOutActivity;
 import com.pertaminalubricants.mysfa.adapter.CustomerListAdapter;
+import com.pertaminalubricants.mysfa.adapter.CustomerProspectListAdapter;
 import com.pertaminalubricants.mysfa.library.Prefs;
 import com.pertaminalubricants.mysfa.library.SessionManager;
+import com.pertaminalubricants.mysfa.model.CustomerProspectRealm;
 import com.pertaminalubricants.mysfa.model.CustomerRealm;
 import com.pertaminalubricants.mysfa.model.CustomerResponse;
 import com.pertaminalubricants.mysfa.realm.RealmController;
 import com.pertaminalubricants.mysfa.rest.CustomerService;
 import com.pertaminalubricants.mysfa.rest.ServiceGenerator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import io.realm.Realm;
@@ -155,8 +157,8 @@ public class ListViewCustomerFragment
 
     @Override
     public ListAdapter getListAdapter() {
-        RealmResults<CustomerRealm> listCustomer = RealmController.with(this).getAllCustomer();
-        return new CustomerListAdapter(this.getActivity(), listCustomer);
+        RealmResults<CustomerProspectRealm> listCustomer = RealmController.with(this).getAllCustomerProspect();
+        return new CustomerProspectListAdapter(this.getActivity(), listCustomer);
 
     }
 
@@ -186,58 +188,67 @@ public class ListViewCustomerFragment
 
             @Override
             public void run() {
-                CustomerService apiService = ServiceGenerator.createService(CustomerService.class);
-                Call<List<CustomerResponse>> call = apiService.getAllCustomer(session.getToken());
-//
-                call.enqueue(new Callback<List<CustomerResponse>>() {
-                    @Override
-                    public void onResponse(Call<List<CustomerResponse>> call, Response<List<CustomerResponse>> response) {
-                        if(response.code() == 200) {
-                            session.updateLoadCustomer(1);
-                            RealmController.with(getActivity()).clearCustomer();
-                            List<CustomerResponse> cusRes = response.body();
-                            for(CustomerResponse cust : cusRes){
-                                CustomerRealm c = new CustomerRealm();
-                                c.setId(cust.getId());
-                                c.setCode(cust.getCode());
-                                c.setName(cust.getName());
-                                c.setAddress1(cust.getAddress1());
-                                c.setPhone(cust.getPhone());
-                                c.setFax(cust.getFax());
-                                c.setLatitude(cust.getLatitude());
-                                c.setLongitude(cust.getLongitude());
-                                c.setActive(cust.getActive());
-                                c.setIsDeleted(cust.getIsDeleted());
-                                c.setCreatedAt(cust.getCreatedAt());
-                                c.setUpdatedAt(cust.getUpdatedAt());
-                                c.setIdRegion(cust.getIdRegion());
-                                c.setIdAccount(cust.getIdAccount());
-                                realm.beginTransaction();
-                                realm.copyToRealm(c);
-                                realm.commitTransaction();
+                JSONObject filterContract = new JSONObject();
+                JSONObject where = new JSONObject();
+                try {
+                    where.put("id_salesman",session.getID());
+                    filterContract.put("where",where);
+                    CustomerService apiService = ServiceGenerator.createService(CustomerService.class);
+                    Call<List<CustomerResponse>> call = apiService.getAllCustomerProspect(session.getToken(), URLEncoder.encode(filterContract.toString(), "UTF-8"));
+    //
+                    call.enqueue(new Callback<List<CustomerResponse>>() {
+                        @Override
+                        public void onResponse(Call<List<CustomerResponse>> call, Response<List<CustomerResponse>> response) {
+                            if(response.code() == 200) {
+                                session.updateLoadCustomer(1);
+                                RealmController.with(getActivity()).clearCustomerProspect();
+                                List<CustomerResponse> cusRes = response.body();
+                                for(CustomerResponse cust : cusRes){
+                                    CustomerProspectRealm c = new CustomerProspectRealm();
+                                    c.setId(cust.getId());
+                                    c.setCode(cust.getCode());
+                                    c.setName(cust.getName());
+                                    c.setAddress1(cust.getAddress1());
+                                    c.setPhone(cust.getPhone());
+                                    c.setFax(cust.getFax());
+                                    c.setLatitude(cust.getLatitude());
+                                    c.setLongitude(cust.getLongitude());
+                                    c.setActive(cust.getActive());
+                                    c.setIsDeleted(cust.getIsDeleted());
+                                    c.setCreatedAt(cust.getCreatedAt());
+                                    c.setUpdatedAt(cust.getUpdatedAt());
+                                    c.setIdRegion(cust.getIdRegion());
+                                    c.setIdAccount(cust.getIdAccount());
+                                    realm.beginTransaction();
+                                    realm.copyToRealm(c);
+                                    realm.commitTransaction();
+                                }
+
+                                Prefs.with(ctx).setPreLoad(true);
                             }
-
-                            Prefs.with(ctx).setPreLoad(true);
+                            ListAdapter adapter = getListAdapter();
+                            mListView.setAdapter(adapter);
+                            setRefreshing(false);
                         }
-                        ListAdapter adapter = getListAdapter();
-                        mListView.setAdapter(adapter);
-                        setRefreshing(false);
-                    }
 
-                    @Override
-                    public void onFailure(Call<List<CustomerResponse>> call, Throwable t) {
-//                        alertDialog = new AlertDialog.Builder(InputCustomerActivity.this).create();
-//                        TextView myMsg = new TextView(InputCustomerActivity.this);
-//                        myMsg.setText("Terjadi kesalahan pada server. Silahkan ulangi beberapa saat lagi.");
-//                        myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
-//                        myMsg.setTextColor(Color.BLACK);
-//                        myMsg.setPadding(15, 15, 15, 15);
-//                        alertDialog.setView(myMsg);
-//                        alertDialog.show();
-                        setRefreshing(false);
-                    }
-                });
-
+                        @Override
+                        public void onFailure(Call<List<CustomerResponse>> call, Throwable t) {
+    //                        alertDialog = new AlertDialog.Builder(InputCustomerActivity.this).create();
+    //                        TextView myMsg = new TextView(InputCustomerActivity.this);
+    //                        myMsg.setText("Terjadi kesalahan pada server. Silahkan ulangi beberapa saat lagi.");
+    //                        myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
+    //                        myMsg.setTextColor(Color.BLACK);
+    //                        myMsg.setPadding(15, 15, 15, 15);
+    //                        alertDialog.setView(myMsg);
+    //                        alertDialog.show();
+                            setRefreshing(false);
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
 
         }, 200);
@@ -246,24 +257,24 @@ public class ListViewCustomerFragment
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         selectedCustomer = (CustomerRealm) adapterView.getItemAtPosition(position);
-        if (menu != null){
-            MenuItem menuEdit = menu.findItem(R.id.action_edit);
-            menuEdit.setVisible(!menuEdit.isVisible());
-        }
+//        if (menu != null){
+//            MenuItem menuEdit = menu.findItem(R.id.action_edit);
+//            menuEdit.setVisible(!menuEdit.isVisible());
+//        }
 //        Log.d("salesapp", "selesai masuk onItemClick");
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-        if (menu != null){
-            MenuItem menuEdit = menu.findItem(R.id.action_edit);
-//            MenuItem menuCancel = menu.findItem(R.id.action_cancel);
-
-            menuEdit.setVisible(!menuEdit.isVisible());
-//            menuCancel.setVisible(!menuCancel.isVisible());
-
-        }
+//        if (menu != null){
+//            MenuItem menuEdit = menu.findItem(R.id.action_edit);
+////            MenuItem menuCancel = menu.findItem(R.id.action_cancel);
+//
+//            menuEdit.setVisible(!menuEdit.isVisible());
+////            menuCancel.setVisible(!menuCancel.isVisible());
+//
+//        }
 
         return false;
     }
@@ -275,25 +286,15 @@ public class ListViewCustomerFragment
         // TODO Auto-generated method stub
         super.onCreateOptionsMenu(menu, inflater);
         this.menu = menu;
-        inflater.inflate(R.menu.menu_sales_process, menu);
+        inflater.inflate(R.menu.menu_empty, menu);
 
-        MenuItem menuEdit = this.menu.findItem(R.id.action_edit);
-        menuEdit.setVisible(false);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_edit){
-
-            Intent i;
-            i = new Intent(this.getActivity(), InputOrderInOutActivity.class);
-            i.putExtra("id", selectedCustomer.getId());
-            startActivity(i);
-            return true;
-        }
-//        else if(id == R.id.action_cancel){
-//            //Do whatever you want to do
+//        if(id == R.id.action_edit){
+//
 //            return true;
 //        }
 

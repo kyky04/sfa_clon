@@ -34,13 +34,20 @@ public class StockResponse {
     private int idCustomer;
     @SerializedName("id_site")
     private int idSite;
+    @SerializedName("material")
+    private MaterialResponse material;
 
-    public StockResponse(int id, String code, String name, String createdAt, String updatedAt, int createdBy, int modifiedBy, int qty, int status, int idDistributor, int idMaterial, int idCustomer, int idSite) {
-        this.id = id;
-        this.code = code;
+    public StockResponse(String name) {
         this.name = name;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    }
+
+    public StockResponse(int id, String code, String name, String createdAt, String updatedAt, int createdBy, int modifiedBy, int qty, int status, int idDistributor, int idMaterial, int idCustomer, int idSite, MaterialResponse material) {
+        MaterialResponse tmp = new MaterialResponse(0,"","","", "", "", "", "", "", "", "", "");
+        this.id = id;
+        this.code = (code == null) ? "":code;
+        this.name = (name == null) ? "":name;
+        this.createdAt = (createdAt == null) ? "":createdAt;
+        this.updatedAt = (updatedAt == null) ? "":updatedAt;
         this.createdBy = createdBy;
         this.modifiedBy = modifiedBy;
         this.qty = qty;
@@ -49,6 +56,15 @@ public class StockResponse {
         this.idMaterial = idMaterial;
         this.idCustomer = idCustomer;
         this.idSite = idSite;
+        this.material = (material == null)? tmp:material;
+    }
+
+    public MaterialResponse getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(MaterialResponse material) {
+        this.material = material;
     }
 
     public int getId() {

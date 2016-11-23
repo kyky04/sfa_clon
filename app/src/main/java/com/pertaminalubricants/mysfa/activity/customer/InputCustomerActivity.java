@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -119,7 +120,8 @@ public class InputCustomerActivity extends StandarActivity {
             }
         });
 
-        setupActionBar();
+        getSupportActionBar().setTitle("Entry Customer Prospect");
+//        setupActionBar();
     }
 
     @Override
@@ -133,31 +135,38 @@ public class InputCustomerActivity extends StandarActivity {
         return super.findViewById(id);
     }
 
-    @SuppressLint("InflateParams")
-    private void setupActionBar() {
-        ActionBar mActionBar = getSupportActionBar();
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setDisplayShowTitleEnabled(false);
+//    @SuppressLint("InflateParams")
+//    private void setupActionBar() {
+//        ActionBar mActionBar = getSupportActionBar();
+//        mActionBar.setDisplayShowHomeEnabled(false);
+//        mActionBar.setDisplayShowTitleEnabled(false);
+//
+//        LayoutInflater mInflater = LayoutInflater.from(this);
+//
+//        View mCustomView = mInflater.inflate(R.layout.head_no_action, null);
+//        TextView mTitle = (TextView) mCustomView.findViewById(R.id.title);
+//        mTitle.setText("Entry Prospect");
+//
+//        ImageView mIcon = (ImageView) mCustomView.findViewById(R.id.home_icon);
+//        mIcon.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                finish();
+//            }
+//        });
+//
+//
+//        mActionBar.setCustomView(mCustomView);
+//        mActionBar.setDisplayShowCustomEnabled(true);
+//    }
 
 
-        LayoutInflater mInflater = LayoutInflater.from(this);
-
-        View mCustomView = mInflater.inflate(R.layout.head_no_action, null);
-        TextView mTitle = (TextView) mCustomView.findViewById(R.id.title);
-        mTitle.setText("Entry Customer");
-
-        ImageView mIcon = (ImageView) mCustomView.findViewById(R.id.home_icon);
-        mIcon.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-
-        mActionBar.setCustomView(mCustomView);
-        mActionBar.setDisplayShowCustomEnabled(true);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_empty, menu);
+        return true;
     }
 
     public boolean validation(){
@@ -191,6 +200,7 @@ public class InputCustomerActivity extends StandarActivity {
             params.put("active","1");
             params.put("is_deleted","0");
             params.put("created_at", CommonUtil.getCurrentDate());
+            params.put("status","PROSPECT");
             params.put("id_region","1");
             Intent i = new Intent();
 

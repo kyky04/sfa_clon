@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.pertaminalubricants.mysfa.R;
 import com.pertaminalubricants.mysfa.model.OrderInOut;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -71,7 +72,8 @@ public class OrderInOutListAdapter extends BaseAdapter {
         OrderInOut m = listOrderInOut.get(position);
         tvDate.setText(format.format(m.getDate()));
         tvQty.setText("Total ("+m.getTotalVolume()+") items");
-        tvTotal.setText(String.valueOf(m.getTotalOrder()));
+        DecimalFormat df = new DecimalFormat("###,###.##");
+        tvTotal.setText("Rp. "+df.format(m.getTotalOrder()).toString().replace(",", "."));
         tvCode.setText(m.getCode());
         tvStatus.setText(m.getStatus());
 

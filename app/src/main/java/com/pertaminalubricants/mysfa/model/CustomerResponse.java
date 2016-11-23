@@ -37,17 +37,17 @@ public class CustomerResponse {
 
     public CustomerResponse(int id, String code, String name, String address1, String phone, String fax, String latitude, String longitude, int active, int isDeleted, String createdAt, String updatedAt, int idRegion, int idAccount) {
         this.id = id;
-        this.code = code;
-        this.name = name;
-        this.address1 = address1;
-        this.phone = phone;
-        this.fax = fax;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.code = (code == null) ? "":code;
+        this.name = (name == null) ? "":name;
+        this.address1 = (address1 == null) ? "":address1;
+        this.phone = (phone == null) ? "":phone;
+        this.fax = (fax == null) ? "":fax;
+        this.latitude = (latitude == null) ? "":latitude;
+        this.longitude = (longitude == null) ? "":longitude;
         this.active = active;
         this.isDeleted = isDeleted;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = (createdAt == null) ? "":createdAt;
+        this.updatedAt = (updatedAt == null) ? "":updatedAt;
         this.idRegion = idRegion;
         this.idAccount = idAccount;
     }

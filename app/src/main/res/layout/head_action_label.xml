@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp" >
+    android:layout_height="50dp"
+    android:background="@color/mdl_color_primary">
 
     <ImageView
         android:id="@+id/home_icon"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:layout_alignParentTop="true"
         android:src="@drawable/ic_ab_arrow_back" />
 
@@ -17,15 +19,26 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:text="ENTRY SALES asdasdasda"
         android:gravity="center"
         android:textColor="@color/white"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ImageView
+        android:id="@+id/action_icon2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_ab_check"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/action_icon"
+        android:layout_toStartOf="@+id/action_icon" />
+
+    <ImageView
         android:id="@+id/action_icon"
         android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_ab_refresh"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_ab_refresh" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 </RelativeLayout>

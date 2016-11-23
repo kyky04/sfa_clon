@@ -10,8 +10,11 @@ import io.realm.annotations.PrimaryKey;
 public class Ordertmp extends RealmObject {
 
     @PrimaryKey
-    @SerializedName("order_code")
+    @SerializedName("order_id")
     private String id;
+
+    @SerializedName("order_code")
+    private String code;
 
     @SerializedName("customer_code")
     private String custId;
@@ -23,17 +26,63 @@ public class Ordertmp extends RealmObject {
     private Date date;
 
     @SerializedName("order_volume")
-    private int totalVolume;
+    private long totalVolume;
 
     @SerializedName("order_order")
-    private double totalOrder;
+    private long totalOrder;
 
     @SerializedName("order_status")
     private String status;
 
+    @SerializedName("id_salesman")
+    private int idSalesman;
+
+    @SerializedName("id_parent")
+    private int idParent;
+
 //    @Ignore
 //    private String isbn;
 
+
+    public Ordertmp() {
+    }
+
+    public Ordertmp(String id, String code, String custId, String tax, Date date, long totalVolume, long totalOrder, String status, int idSalesman, int idParent) {
+        this.id = id;
+        this.code = code;
+        this.custId = custId;
+        this.tax = tax;
+        this.date = date;
+        this.totalVolume = totalVolume;
+        this.totalOrder = totalOrder;
+        this.status = status;
+        this.idSalesman = idSalesman;
+        this.idParent = idParent;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public int getIdSalesman() {
+        return idSalesman;
+    }
+
+    public void setIdSalesman(int idSalesman) {
+        this.idSalesman = idSalesman;
+    }
+
+    public int getIdParent() {
+        return idParent;
+    }
+
+    public void setIdParent(int idParent) {
+        this.idParent = idParent;
+    }
 
     public String getId() {
         return id;
@@ -67,19 +116,19 @@ public class Ordertmp extends RealmObject {
         this.date = date;
     }
 
-    public int getTotalVolume() {
+    public long getTotalVolume() {
         return totalVolume;
     }
 
-    public void setTotalVolume(int totalVolume) {
+    public void setTotalVolume(long totalVolume) {
         this.totalVolume = totalVolume;
     }
 
-    public double getTotalOrder() {
+    public long getTotalOrder() {
         return totalOrder;
     }
 
-    public void setTotalOrder(double totalOrder) {
+    public void setTotalOrder(long totalOrder) {
         this.totalOrder = totalOrder;
     }
 

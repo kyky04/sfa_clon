@@ -2,6 +2,8 @@ package com.pertaminalubricants.mysfa.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by nunu on 10/31/2016.
  */
@@ -37,6 +39,8 @@ public class SalesInOutResponse {
     private String doStatus;
     @SerializedName("is_secondary")
     private int isSecondary;
+    @SerializedName("is_final")
+    private int isFinal;
     @SerializedName("dist_type")
     private String distType;
     @SerializedName("id_distributor")
@@ -56,11 +60,16 @@ public class SalesInOutResponse {
     @SerializedName("id_salesman")
     private int idSalesman;
     @SerializedName("tot_volume")
-    private int totVolume;
+    private long totVolume;
     @SerializedName("tot_sales")
-    private Double totSales;
+    private long totSales;
+    @SerializedName("salesitems")
+    private List<SalesItemResponse> salesItems;
 
-    public SalesInOutResponse(String id, String code, String trxType, String plant, String shipto, String delivNumb, String actualGiDate, String invoiceNo, String createdAt, String updatedAt, String doAt, int pendingDo, String salesStatus, String doStatus, int isSecondary, String distType, int idDistributor, int idCustomer, int idUser, int idSecondary, int idHandler, int idFollowup, int idParent, int idSalesman, int totVolume, Double totSales) {
+    public SalesInOutResponse() {
+    }
+
+    public SalesInOutResponse(String id, String code, String trxType, String plant, String shipto, String delivNumb, String actualGiDate, String invoiceNo, String createdAt, String updatedAt, String doAt, int pendingDo, String salesStatus, String doStatus, int isSecondary, int isFinal, String distType, int idDistributor, int idCustomer, int idUser, int idSecondary, int idHandler, int idFollowup, int idParent, int idSalesman, long totVolume, long totSales, List<SalesItemResponse> salesItems) {
         this.id = id;
         this.code = code;
         this.trxType = trxType;
@@ -76,6 +85,7 @@ public class SalesInOutResponse {
         this.salesStatus = salesStatus;
         this.doStatus = doStatus;
         this.isSecondary = isSecondary;
+        this.isFinal = isFinal;
         this.distType = distType;
         this.idDistributor = idDistributor;
         this.idCustomer = idCustomer;
@@ -87,6 +97,15 @@ public class SalesInOutResponse {
         this.idSalesman = idSalesman;
         this.totVolume = totVolume;
         this.totSales = totSales;
+        this.salesItems = salesItems;
+    }
+
+    public List<SalesItemResponse> getSalesItems() {
+        return salesItems;
+    }
+
+    public void setSalesItems(List<SalesItemResponse> salesItems) {
+        this.salesItems = salesItems;
     }
 
     public int getIdParent() {
@@ -281,19 +300,27 @@ public class SalesInOutResponse {
         this.idFollowup = idFollowup;
     }
 
-    public int getTotVolume() {
+    public long getTotVolume() {
         return totVolume;
     }
 
-    public void setTotVolume(int totVolume) {
+    public void setTotVolume(long totVolume) {
         this.totVolume = totVolume;
     }
 
-    public Double getTotSales() {
+    public long getTotSales() {
         return totSales;
     }
 
-    public void setTotSales(Double totSales) {
+    public void setTotSales(long totSales) {
         this.totSales = totSales;
+    }
+
+    public int getIsFinal() {
+        return isFinal;
+    }
+
+    public void setIsFinal(int isFinal) {
+        this.isFinal = isFinal;
     }
 }

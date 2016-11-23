@@ -26,6 +26,9 @@ import com.pertaminalubricants.mysfa.realm.RealmController;
 import com.pertaminalubricants.mysfa.rest.SalesService;
 import com.pertaminalubricants.mysfa.rest.ServiceGenerator;
 
+import org.json.JSONObject;
+
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,12 +130,19 @@ public class ChooseStockActivity extends com.blunderer.materialdesignlibrary.act
     @Override
     public ListAdapter getListAdapter() {
         session = new SessionManager(getBaseContext());
-        SalesService apiService = ServiceGenerator.createService(SalesService.class);
-        Call<List<StockResponse>> call = apiService.getAllStock(session.getToken());
+        JSONObject filter = new JSONObject();
+        JSONObject where = new JSONObject();
+
+        try {
+            where.put("id_distributor", session.getDistributor());
+            filter.put("where", where);
+            filter.put("include", "material");
+            SalesService apiService2 = ServiceGenerator.createService(SalesService.class);
+            Call<List<StockResponse>> call = apiService2.getAllStock(session.getToken(), URLEncoder.encode(filter.toString(), "UTF-8"));
 //
-        call.enqueue(new Callback<List<StockResponse>>() {
-            @Override
-            public void onResponse(Call<List<StockResponse>> call, Response<List<StockResponse>> response) {
+            call.enqueue(new Callback<List<StockResponse>>() {
+                @Override
+                public void onResponse(Call<List<StockResponse>> call, Response<List<StockResponse>> response) {
                     List<StockResponse> listStock = response.body();
 //                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 //                    for(SalesInOutResponse sale: sales){
@@ -150,15 +160,17 @@ public class ChooseStockActivity extends com.blunderer.materialdesignlibrary.act
 //                    }
                     adapter = new StockListAdapter(ChooseStockActivity.this, listStock);
                     mListView.setAdapter(adapter);
-            }
+                }
 
-            @Override
-            public void onFailure(Call<List<StockResponse>> call, Throwable t) {
-                // Log error here since request failed
-                Log.e("sales", t.toString());
-            }
-        });
+                @Override
+                public void onFailure(Call<List<StockResponse>> call, Throwable t) {
+                    // Log error here since request failed
+                    Log.e("sales", t.toString());
+                }
+            });
+        } catch (Exception e){
 
+        }
         return new StockListAdapter(ChooseStockActivity.this, new ArrayList<StockResponse>());
     }
     @Override

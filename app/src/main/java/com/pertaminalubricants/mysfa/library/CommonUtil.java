@@ -15,4 +15,14 @@ public class CommonUtil {
         Date date = new Date();
         return format.format(date);
     }
+
+    public static String convertDate(String date){
+        String result = "";
+        if(date != null && !date.equals("")){
+            String[] tmp = date.split("-");
+            result = tmp[2]+"-"+tmp[1]+"-"+tmp[0];
+        }
+
+        return result;
+    }
 }

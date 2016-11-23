@@ -16,7 +16,7 @@ public class SalesItemResponse {
     @SerializedName("qty")
     private int qty;
     @SerializedName("unit_price")
-    private Double unitPrice;
+    private long unitPrice;
     @SerializedName("uom")
     private String uom;
     @SerializedName("batch")
@@ -36,7 +36,11 @@ public class SalesItemResponse {
     @SerializedName("id_material")
     private int idMaterial;
 
-    public SalesItemResponse(int id, String name, String code, int qty, Double unitPrice, String uom, String batch, int createdBy, int modifiedBy, String createdAt, String modifiedAt, int supplyBySecondary, int idSalesTrx, int idMaterial) {
+    public SalesItemResponse(){
+
+    }
+
+    public SalesItemResponse(int id, String name, String code, int qty, long unitPrice, String uom, String batch, int createdBy, int modifiedBy, String createdAt, String modifiedAt, int supplyBySecondary, int idSalesTrx, int idMaterial) {
         this.id = id;
         this.name = name;
         this.code = code;
@@ -85,11 +89,11 @@ public class SalesItemResponse {
         this.qty = qty;
     }
 
-    public Double getUnitPrice() {
+    public long getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(Double unitPrice) {
+    public void setUnitPrice(long unitPrice) {
         this.unitPrice = unitPrice;
     }
 

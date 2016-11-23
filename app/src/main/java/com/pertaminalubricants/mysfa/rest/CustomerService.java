@@ -1,5 +1,6 @@
 package com.pertaminalubricants.mysfa.rest;
 
+import com.pertaminalubricants.mysfa.model.ContractResponse;
 import com.pertaminalubricants.mysfa.model.CustomerResponse;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import retrofit2.http.Query;
 
 public interface CustomerService {
     @GET("customers")
-    Call<List<CustomerResponse>> getAllCustomer(@Query("access_token") String token);
+    Call<List<CustomerResponse>> getAllCustomerProspect(@Query("access_token") String token, @Query(value = "filter", encoded = true) String filter);
 
     @GET("customers/{id}")
     Call<CustomerResponse> getCustomer(@Path("id") String id, @Query("access_token") String token);
@@ -27,4 +28,8 @@ public interface CustomerService {
     @FormUrlEncoded
     @POST("customers")
     Call<CustomerResponse> addCustomer(@FieldMap Map<String, String> params, @Query("access_token") String token);
+
+
+    @GET("contracts")
+    Call<List<ContractResponse>> getAllContract(@Query("access_token") String token, @Query(value = "filter", encoded = true) String filter);
 }

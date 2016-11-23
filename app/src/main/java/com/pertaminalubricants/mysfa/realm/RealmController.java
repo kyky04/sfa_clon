@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
 
+import com.pertaminalubricants.mysfa.model.CustomerProspectRealm;
 import com.pertaminalubricants.mysfa.model.CustomerRealm;
+import com.pertaminalubricants.mysfa.model.MaterialRealm;
 import com.pertaminalubricants.mysfa.model.OrderDetailTmp;
 import com.pertaminalubricants.mysfa.model.Ordertmp;
+import com.pertaminalubricants.mysfa.model.StockOpnameRealm;
 import com.pertaminalubricants.mysfa.model.StockRealm;
 
 import io.realm.Realm;
@@ -78,12 +81,37 @@ public class RealmController {
         realm.commitTransaction();
     }
 
+    public void clearCustomerProspect() {
+
+        realm.beginTransaction();
+        realm.clear(CustomerProspectRealm.class);
+        realm.commitTransaction();
+    }
+
     public void clearStock() {
 
         realm.beginTransaction();
         realm.clear(StockRealm.class);
+        realm.clear(MaterialRealm.class);
         realm.commitTransaction();
     }
+
+    public void clearOrderTmp() {
+
+        realm.beginTransaction();
+        realm.clear(Ordertmp.class);
+        realm.clear(OrderDetailTmp.class);
+        realm.commitTransaction();
+    }
+
+    public void clearStockOpname() {
+
+        realm.beginTransaction();
+        realm.clear(StockOpnameRealm.class);
+        realm.commitTransaction();
+    }
+
+
 
     //find all objects in the OrderDetailTmp.class
     public RealmResults<OrderDetailTmp> getOrderDetailTmps() {
@@ -120,14 +148,47 @@ public class RealmController {
     }
 
 
+    public RealmResults<CustomerProspectRealm> getAllCustomerProspect() {
+
+        return realm.where(CustomerProspectRealm.class).findAll();
+    }
+
+
     public RealmResults<CustomerRealm> getAllCustomer() {
 
         return realm.where(CustomerRealm.class).findAll();
     }
 
 
+    public CustomerRealm getCustomer(int id) {
+
+//        return realm.where(CustomerRealm.class).equalTo("id", id).findFirst();
+        return realm.where(CustomerRealm.class).findFirst();
+    }
+
+
+    public CustomerProspectRealm getCustomerProspect(int id) {
+
+//        return realm.where(CustomerRealm.class).equalTo("id", id).findFirst();
+        return realm.where(CustomerProspectRealm.class).findFirst();
+    }
+
+
     public RealmResults<StockRealm> getAllStock() {
 
         return realm.where(StockRealm.class).findAll();
+    }
+
+
+    public RealmResults<StockOpnameRealm> getAllScheduleStockOpname() {
+
+        return realm.where(StockOpnameRealm.class).findAll();
+    }
+
+
+    public StockOpnameRealm getScheduleStockOpname(int id) {
+
+        return realm.where(StockOpnameRealm.class).equalTo("id", id).findFirst();
+//        return realm.where(CustomerRealm.class).findFirst();
     }
 }

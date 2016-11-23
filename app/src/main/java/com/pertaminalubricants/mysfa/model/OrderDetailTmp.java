@@ -22,11 +22,17 @@ public class OrderDetailTmp extends RealmObject {
 
     private String productMaterial;
 
+    private int productMaterialId;
+
+    private String productGrossWeightUom;
+
+    private int productSupplyBySecondary;
+
     private int qty;
 
-    private double price;
+    private long price;
 
-    private double total;
+    private long total;
 
 //    @Ignore
 //    private String isbn;
@@ -56,19 +62,19 @@ public class OrderDetailTmp extends RealmObject {
         this.qty = qty;
     }
 
-    public double getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(long price) {
         this.price = price;
     }
 
-    public double getTotal() {
+    public long getTotal() {
         return total;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(long total) {
         this.total = total;
     }
 
@@ -102,5 +108,29 @@ public class OrderDetailTmp extends RealmObject {
 
     public void setProductMaterial(String productMaterial) {
         this.productMaterial = productMaterial;
+    }
+
+    public String getProductGrossWeightUom() {
+        return productGrossWeightUom;
+    }
+
+    public void setProductGrossWeightUom(String productGrossWeightUom) {
+        this.productGrossWeightUom = productGrossWeightUom;
+    }
+
+    public int getProductSupplyBySecondary() {
+        return productSupplyBySecondary;
+    }
+
+    public void setProductSupplyBySecondary(int productSupplyBySecondary) {
+        this.productSupplyBySecondary = productSupplyBySecondary;
+    }
+
+    public int getProductMaterialId() {
+        return productMaterialId;
+    }
+
+    public void setProductMaterialId(int productMaterialId) {
+        this.productMaterialId = productMaterialId;
     }
 }

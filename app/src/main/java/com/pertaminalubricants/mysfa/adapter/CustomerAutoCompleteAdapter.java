@@ -13,7 +13,7 @@ import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.RealmResults;
-
+import com.pertaminalubricants.mysfa.R;
 /**
  * Created by nunu on 11/5/2016.
  */
@@ -31,46 +31,20 @@ public class CustomerAutoCompleteAdapter <T extends RealmObject> extends Filtera
     }
 
     @Override
-    public View getView(final int position, final View convertView, final ViewGroup parent) {
-        final TextView tv;
-        if (convertView != null) {
-            tv = (TextView) convertView;
-        } else {
-            tv = (TextView) mInflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
-        }
-        getItem(position);
-        tv.setText(createFormattedCustomer((CustomerRealm) getItem(position)));
-        return tv;
+    public View getView(final int position, View convertView, final ViewGroup parent) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        convertView = inflater.inflate(R.layout.listview_row_customer, parent, false);
+
+        TextView name = (TextView) convertView.findViewById(R.id.cust_name);
+        TextView phone = (TextView) convertView.findViewById(R.id.cust_phone);
+        TextView address = (TextView) convertView.findViewById(R.id.cust_location);
+
+        // getting Route data for the row
+        CustomerRealm m = (CustomerRealm) getItem(position);
+        name.setText(m.getName());
+        phone.setText("Phone " + m.getPhone());
+        address.setText(m.getAddress1());
+
+        return convertView;
     }
-
-    private String createFormattedCustomer(final CustomerRealm customer) {
-//        mSb.setLength(0);
-//        final int addressLineSize = address.getMaxAddressLineIndex();
-//        for (int i = 0; i < addressLineSize; i++) {
-//            mSb.append(address.getAddressLine(i));
-//            if (i != addressLineSize - 1) {
-//                mSb.append(", ");
-//            }
-//        }
-//        return mSb.toString();
-        return customer.getCode()+" - "+customer.getName();
-    }
-
-//    public List<T> performRealmFiltering(@NonNull CharSequence constraint, RealmResults<T> results){
-////    public void performRealmFiltering(@NonNull CharSequence constraint, RealmResults<T> results){
-//
-//        if (constraint != null) {
-//            mResults = mRealmObjectList.where().contains("name", String.valueOf(constraint)).findAll();
-//        }
-//        return mResults;
-//    }
-
-
-//    @Override
-//    protected List<T> performRealmFiltering(@NonNull CharSequence constraint, RealmResults<T> results){
-//        if (constraint != null) {
-//            mResults = mRealmObjectList.where().contains("name", String.valueOf(constraint)).findAll();
-//        }
-//        return mResults;
-//    }
 }

@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sales.android.salesapp.fragments.HomeFragment">
+    tools:context="com.pertaminalubricants.mysfa.fragment.HomeFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.pertaminalubricants.speedup.fragment.FragmentHome">
+        tools:context="com.pertaminalubricants.mysfa.fragment.HomeFragment">
 
         <LinearLayout
             android:id="@+id/row_1"

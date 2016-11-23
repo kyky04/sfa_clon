@@ -30,10 +30,10 @@ public class OrderInOut extends RealmObject {
     private Date date;
 
     @SerializedName("order_volume")
-    private int totalVolume;
+    private long totalVolume;
 
     @SerializedName("order_order")
-    private double totalOrder;
+    private long totalOrder;
 
     @SerializedName("order_status")
     private String status;
@@ -51,7 +51,7 @@ public class OrderInOut extends RealmObject {
     public OrderInOut() {
     }
 
-    public OrderInOut(String id, String code, String custId, String tax, Date date, int totalVolume, double totalOrder, String status, int idSalesman, int idParent) {
+    public OrderInOut(String id, String code, String custId, String tax, Date date, long totalVolume, long totalOrder, String status, int idSalesman, int idParent) {
         this.id = id;
         this.code = code;
         this.custId = custId;
@@ -120,19 +120,19 @@ public class OrderInOut extends RealmObject {
         this.date = date;
     }
 
-    public int getTotalVolume() {
+    public long getTotalVolume() {
         return totalVolume;
     }
 
-    public void setTotalVolume(int totalVolume) {
+    public void setTotalVolume(long totalVolume) {
         this.totalVolume = totalVolume;
     }
 
-    public double getTotalOrder() {
+    public long getTotalOrder() {
         return totalOrder;
     }
 
-    public void setTotalOrder(double totalOrder) {
+    public void setTotalOrder(long totalOrder) {
         this.totalOrder = totalOrder;
     }
 

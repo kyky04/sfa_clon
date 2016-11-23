@@ -26,6 +26,7 @@ import com.pertaminalubricants.mysfa.activity.LoginActivity;
 import com.pertaminalubricants.mysfa.fragment.BlankFragment;
 import com.pertaminalubricants.mysfa.fragment.HomeFragment;
 import com.pertaminalubricants.mysfa.fragment.ListViewCustomerFragment;
+import com.pertaminalubricants.mysfa.fragment.ListViewStockOpnameFragment;
 import com.pertaminalubricants.mysfa.fragment.ListViewTransactionFragment;
 import com.pertaminalubricants.mysfa.fragment.ProfileFragment;
 import com.pertaminalubricants.mysfa.fragment.SalesProcessFragment;
@@ -57,28 +58,16 @@ public class MainActivity extends com.blunderer.materialdesignlibrary.activities
 //                        R.drawable.profile4, R.color.gray);
         session = new SessionManager(getBaseContext());
 
+//        return new NavigationDrawerAccountsHandler(this)
+//                .addAccount(session.getUserName(), session.getEmail(),
+//                        R.drawable.profile5, R.drawable.profile1_background);
         return new NavigationDrawerAccountsHandler(this)
                 .addAccount(session.getUserName(), session.getEmail(),
-                        R.drawable.profile5, R.drawable.profile1_background);
+                        R.drawable.profile5, R.color.color_primary);
     }
 
     @Override
     public NavigationDrawerAccountsMenuHandler getNavigationDrawerAccountsMenuHandler() {
-//        return new NavigationDrawerAccountsMenuHandler(this)
-//                .addAddAccount(new View.OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(View v) {
-//                    }
-//
-//                })
-//                .addManageAccounts(new View.OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(View v) {
-//                    }
-//
-//                });
         return new NavigationDrawerAccountsMenuHandler(this);
     }
 
@@ -88,27 +77,12 @@ public class MainActivity extends com.blunderer.materialdesignlibrary.activities
 
     @Override
     public NavigationDrawerTopHandler getNavigationDrawerTopHandler() {
-//        return new NavigationDrawerTopHandler(this)
-//                .addSection(R.string.fragment)
-//                .addItem(R.string.fragment_listview, new ListViewFragment())
-//                .addItem(R.string.fragment_scrollview, new ScrollViewFragment())
-//                .addItem(R.string.fragment_viewpager, new ViewPagerFragment())
-//                .addItem(R.string.fragment_viewpager_with_tabs, new ViewPagerWithTabsFragment())
-//                .addSection(R.string.activity)
-//                .addItem(R.string.start_activity,
-//                        new Intent(getApplicationContext(), ViewPagerActivity.class));
-//        return new NavigationDrawerTopHandler(this)
-//                .addItem("Dashboard", R.drawable.ic_menu_dashboard, new ListViewFragment())
-//                .addItem("Input Data Penjualan", R.drawable.ic_menu_booking, new ScrollViewFragment())
-//                .addItem("Input Pelanggan Baru", R.drawable.ic_menu_affiliate, new ViewPagerFragment())
-//                .addItem("Visit", R.drawable.ic_menu_booking, new ViewPagerFragment());
-
-
         return new NavigationDrawerTopHandler(this)
                 .addItem("Home", new HomeFragment())
                 .addItem("Dashboard", new BlankFragment())
-                .addItem("Sales Process", new SalesProcessFragment())
-                .addItem("Customer", new ListViewCustomerFragment())
+                .addItem("Sales Order", new SalesProcessFragment())
+                .addItem("Customer Prospect", new ListViewCustomerFragment())
+                .addItem("Stock Opname", new ListViewStockOpnameFragment())
                 .addItem("Follow Up", new ListViewTransactionFragment())
                 .addItem("Profile", new ProfileFragment())
                 ;

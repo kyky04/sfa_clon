@@ -2,6 +2,7 @@ package com.pertaminalubricants.mysfa.activity.order;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,13 +12,14 @@ import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -25,6 +27,8 @@ import android.widget.TextView;
 
 import com.blunderer.materialdesignlibrary.handlers.ActionBarDefaultHandler;
 import com.blunderer.materialdesignlibrary.handlers.ActionBarHandler;
+import com.google.gson.Gson;
+import com.pertaminalubricants.mysfa.library.CommonUtil;
 import com.phlox.datepick.CalendarNumbersView;
 import com.phlox.datepick.CalendarPickerView;
 import com.pertaminalubricants.mysfa.R;
@@ -46,9 +50,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -70,7 +72,7 @@ public class InputOrderInOutActivity extends StandarActivity {
     private List<OrderDetailTmp> listOrderDetails = new ArrayList<OrderDetailTmp>();
     private FloatingActionButton fabNewOrder;
     private int idOrder = 0;
-    private EditText etCustomer,etCustomerId, etVat, etDate;
+    private EditText etCustomer,etCustomerId, etDate, etCode;
     private TextView tvTotal;
     private AutoCompleteTextView acCustomer;
     private Context ctx;
@@ -79,8 +81,7 @@ public class InputOrderInOutActivity extends StandarActivity {
     private double total;
     private SessionManager session;
     private AlertDialog alertDialog;
-//    private android.widget.AutoCompleteTextView text;
-//    private String[] languages={"Android ","java","IOS","SQL","JDBC","Web services"};
+    private ProgressDialog dialog;
 
     public InputOrderInOutActivity() {
         // Required empty public constructor
@@ -95,11 +96,6 @@ public class InputOrderInOutActivity extends StandarActivity {
         mView = stub.inflate();
         ctx = getBaseContext();
         session = new SessionManager(ctx);
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            idOrder = Integer.parseInt(extras.getString("id"));
-        }
-
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this)
                 .name(Realm.DEFAULT_REALM_NAME)
                 .schemaVersion(0)
@@ -108,17 +104,19 @@ public class InputOrderInOutActivity extends StandarActivity {
         Realm.setDefaultConfiguration(realmConfiguration);
         this.realm = RealmController.with(this).getRealm();
 
+        Bundle extras = getIntent().getExtras();
+
 //        if (!Prefs.with(this).getPreLoad()) {
 //            setOrderData();
 //        }
 
         // refresh the realm instance
-        RealmController.with(this).clearAll();
+
         RealmController.with(this).refresh();
         // get all persisted objects
         // create the helper adapter and notify data set changes
         // changes will be reflected automatically
-
+        etCode = (EditText) findViewById(R.id.et_sp_cd);
         etCustomerId = (EditText) findViewById(R.id.et_customer_id);
 //        etCustomer = (EditText) findViewById(R.id.et_customer);
 
@@ -181,43 +179,44 @@ public class InputOrderInOutActivity extends StandarActivity {
             list_view.setAdapter(orderAdapter);
         }
 
+        list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                OrderDetailTmp detail = (OrderDetailTmp) adapterView.getItemAtPosition(position);
+                Intent i = new Intent();
+                i = new Intent(ctx, InputOrderItemActivity.class);
+                i.putExtra("id", detail.getId());
+                startActivityForResult(i, 200);
+            }
+        });
+
         fabNewOrder = (FloatingActionButton) findViewById(R.id.button_add_item);
         fabNewOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("mySFA","masuk on click floating");
                 Intent i = new Intent();
                 i = new Intent(ctx, InputOrderItemActivity.class);
                 startActivityForResult(i, 200);
-//                if (cekValid()){
-//                    doChangePassword();
-//                }
             }
         });
+
         setupActionBar();
-//        setHasOptionsMenu(true);
+
+        if (extras != null) {
+            idOrder = Integer.parseInt(extras.getString("id"));
+            initData();
+        }else{
+            idOrder =0;
+            RealmController.with(this).clearAll();
+        }
     }
 
     public ListAdapter getListAdapter() {
         order = RealmController.with(this).getOrderTmp();
         RealmResults<OrderDetailTmp> listCustomer = RealmController.with(this).getOrderDetailTmps();
         return new OrderItemListAdapter(this, listCustomer);
-
-//        return new OrderInOutListAdapter(this.getActivity(), new ArrayList<OrderInOut>());
     }
-
-//    public void setRealmAdapter() {
-//        Ordertmp order = RealmController.with(this).getOrderTmp();
-//        RealmResults<OrderDetailTmp> listOrderDetail = RealmController.with(this).getOrderDetailTmps();
-//        orderAdapter = new OrderItemListAdapter(this, listOrderDetail);
-//        orderAdapter.notifyDataSetChanged();
-//
-////        RealmBooksAdapter realmAdapter = new RealmBooksAdapter(this.getApplicationContext(), books, true);
-////        // Set the data and tell the RecyclerView to draw
-////        adapter.setRealmAdapter(realmAdapter);
-////        adapter.notifyDataSetChanged();
-//
-//    }
 
     @Override
     protected int getContentView() {
@@ -232,71 +231,32 @@ public class InputOrderInOutActivity extends StandarActivity {
 
     @SuppressLint("InflateParams")
     private void setupActionBar() {
-        ActionBar mActionBar = getSupportActionBar();
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setDisplayShowTitleEnabled(false);
 
+        ActionBar mActionBar = getSupportActionBar();
+        mActionBar.setDisplayShowHomeEnabled(true);
+        mActionBar.setDisplayShowTitleEnabled(true);
+        mActionBar.setTitle("Entry Sales Order");
+        mActionBar.setHomeAsUpIndicator(R.drawable.ic_ab_arrow_back);
 
         LayoutInflater mInflater = LayoutInflater.from(this);
 
-        View mCustomView = mInflater.inflate(R.layout.head_action_label, null);
-        TextView mTitle = (TextView) mCustomView.findViewById(R.id.title);
-        mTitle.setText("Entry Sales Order");
-
-        ImageView mIcon = (ImageView) mCustomView.findViewById(R.id.home_icon);
-        mIcon.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-//                Intent i = new Intent();
-//                i = new Intent(InputOrderInOutActivity.this, MainActivity.class);
-//                startActivity(i);
-                finish();
-            }
-        });
-
-        ImageView mAction = (ImageView) mCustomView.findViewById(R.id.action_icon);
-        mAction.setImageResource(R.mipmap.ic_send);
-        mAction.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                saveOrder();
-//                Intent i = new Intent();
-//                i = new Intent(InputOrderInOutActivity.this, MainActivity.class);
-//                startActivity(i);
-//                finish();
-            }
-        });
-
-        mActionBar.setCustomView(mCustomView);
-        mActionBar.setDisplayShowCustomEnabled(true);
     }
 
     public void saveOrder(){
-
-        Map<String, String> params = generateOrderInOutParam();
+        openDialog();
+        String params = generateOrderInOutParamString();
 
         SalesService apiService = ServiceGenerator.createService(SalesService.class);
-        Call<SalesInOutResponse> call = apiService.addOrder(params,session.getToken());
-//
+        Call<SalesInOutResponse> call = apiService.addOrderJson(params,session.getToken());
+
         call.enqueue(new Callback<SalesInOutResponse>() {
             @Override
             public void onResponse(Call<SalesInOutResponse> call, Response<SalesInOutResponse> response) {
                 if(response.code() == 200) {
+                    closeDialog();
                     saveOrderItem(response.body().getId());
-                    alertDialog = new AlertDialog.Builder(InputOrderInOutActivity.this).create();
-                    TextView myMsg = new TextView(InputOrderInOutActivity.this);
-                    myMsg.setText("Entry data sukses");
-                    myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
-                    myMsg.setTextColor(Color.BLACK);
-                    myMsg.setPadding(15, 15, 15, 15);
-                    alertDialog.setView(myMsg);
-                    alertDialog.show();
-//                    Intent intent = new Intent(InputOrderInOutActivity.this, SplashScreenActivity.class);
-//                    startActivity(intent);
-                    finish();
                 }else{
+                    closeDialog();
                     alertDialog = new AlertDialog.Builder(InputOrderInOutActivity.this).create();
                     TextView myMsg = new TextView(InputOrderInOutActivity.this);
                     myMsg.setText("Entry data gagal : "+response.errorBody());
@@ -310,9 +270,7 @@ public class InputOrderInOutActivity extends StandarActivity {
 
             @Override
             public void onFailure(Call<SalesInOutResponse> call, Throwable t) {
-                // Log error here since request failed
-//                Log.e("sales", t.toString());
-//                closeDialog();
+                closeDialog();
                 alertDialog = new AlertDialog.Builder(InputOrderInOutActivity.this).create();
                 TextView myMsg = new TextView(InputOrderInOutActivity.this);
                 myMsg.setText("Terjadi kesalahan pada server. Silahkan ulangi beberapa saat lagi.");
@@ -328,19 +286,23 @@ public class InputOrderInOutActivity extends StandarActivity {
     public void saveOrderItem(String id){
         RealmResults<OrderDetailTmp> listOrderItems = RealmController.with(this).getOrderDetailTmps();
         for(OrderDetailTmp detail : listOrderItems){
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("name",detail.getProductName());
-            params.put("code",detail.getProductCode());
-            params.put("qty",String.valueOf(detail.getQty()));
-            params.put("unit_price",String.valueOf(detail.getPrice()));
-            params.put("supply_by_secondary","0");
-            params.put("id_sales_trx",id);
-            params.put("id_material",detail.getProductMaterial());
-            sendOrderItem(id, params);
+            SalesItemResponse si = new SalesItemResponse();
+            si.setIdSalesTrx(Integer.parseInt(id));
+            si.setName(detail.getProductName().toString());
+            si.setCode(detail.getProductCode().toString());
+            si.setQty(detail.getQty());
+            si.setUnitPrice(detail.getPrice());
+            si.setUom(detail.getProductGrossWeightUom());
+            si.setSupplyBySecondary(detail.getProductSupplyBySecondary());
+            si.setIdMaterial(detail.getProductMaterialId());
+            Gson gson = new Gson();
+            String param = gson.toJson(si);
+            sendOrderItem(id, param);
         }
+        finish();
     }
 
-    public void sendOrderItem(String id, Map<String, String> params){
+    public void sendOrderItem(String id, String params){
 
         SalesService apiService = ServiceGenerator.createService(SalesService.class);
         Call<SalesItemResponse> call = apiService.addOrderItem(id, params,session.getToken());
@@ -358,6 +320,52 @@ public class InputOrderInOutActivity extends StandarActivity {
             @Override
             public void onFailure(Call<SalesItemResponse> call, Throwable t) {
 
+            }
+        });
+    }
+
+    public void finalizeOrder(){
+        openDialog();
+        SalesInOutResponse so = new SalesInOutResponse();
+        so.setId(String.valueOf(idOrder));
+        so.setIsFinal(1);
+        so.setUpdatedAt(CommonUtil.convertDate(etDate.getText().toString()));
+        Gson gson = new Gson();
+        String param = gson.toJson(so);
+
+        SalesService apiService = ServiceGenerator.createService(SalesService.class);
+        Call<SalesInOutResponse> call = apiService.setOrderToFinal(String.valueOf(idOrder), param,session.getToken());
+
+        call.enqueue(new Callback<SalesInOutResponse>() {
+            @Override
+            public void onResponse(Call<SalesInOutResponse> call, Response<SalesInOutResponse> response) {
+                if(response.code() == 200) {
+                    closeDialog();
+                    finish();
+                }else{
+                    closeDialog();
+                    alertDialog = new AlertDialog.Builder(InputOrderInOutActivity.this).create();
+                    TextView myMsg = new TextView(InputOrderInOutActivity.this);
+                    myMsg.setText("Finalisasi order gagal. ");
+                    myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
+                    myMsg.setTextColor(Color.BLACK);
+                    myMsg.setPadding(15, 15, 15, 15);
+                    alertDialog.setView(myMsg);
+                    alertDialog.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SalesInOutResponse> call, Throwable t) {
+                closeDialog();
+                alertDialog = new AlertDialog.Builder(InputOrderInOutActivity.this).create();
+                TextView myMsg = new TextView(InputOrderInOutActivity.this);
+                myMsg.setText("Terjadi kesalahan pada server. Silahkan ulangi beberapa saat lagi.");
+                myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
+                myMsg.setTextColor(Color.BLACK);
+                myMsg.setPadding(15, 15, 15, 15);
+                alertDialog.setView(myMsg);
+                alertDialog.show();
             }
         });
     }
@@ -400,6 +408,30 @@ public class InputOrderInOutActivity extends StandarActivity {
     };
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        if (getIntent().getExtras() == null) {
+            getMenuInflater().inflate(R.menu.menu_input_sales_order, menu);
+        }else getMenuInflater().inflate(R.menu.menu_input_sales_order2, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }else if (item.getItemId() == R.id.save) {
+            saveOrder();
+        }else if (item.getItemId() == R.id.senttoinvoice) {
+            finalizeOrder();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected ActionBarHandler getActionBarHandler() {
         return new ActionBarDefaultHandler(this);
     }
@@ -409,32 +441,62 @@ public class InputOrderInOutActivity extends StandarActivity {
         return true;
     }
 
-    private Map<String, String> generateOrderInOutParam(){
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("trx_type","SALES_ORDER");
-        params.put("do_at","2016-11-01");
-        params.put("pending_do","0");
-        params.put("sales_status","NEW");
-        params.put("do_status","");
-        params.put("is_secondary","0");
-        params.put("dist_type","");
-        params.put("id_parent","84");
-        params.put("id_salesman",session.getID());
-        params.put("code","43210");
-        params.put("plant","");
-        params.put("shipto","");
-        params.put("delivnumb","");
-        params.put("actualgidate","2016-11-01");
-        params.put("invoiceno","");
-        params.put("created_at","2016-11-01");
-        params.put("invoiceno","2016-11-01");
-        params.put("updated_at","2016-11-01");
-        params.put("id_distributor",session.getDistributor());
-        params.put("id_customer",etCustomerId.getText().toString());
-        params.put("id_user",session.getID());
-        params.put("id_secondary","0");
-        params.put("id_handler","0");
-        params.put("id_followup","0");
-        return params;
+    private String generateOrderInOutParamString(){
+        int totalVolume = 0;
+        long totalSales = 0;
+        RealmResults<OrderDetailTmp> listOrderItems = RealmController.with(this).getOrderDetailTmps();
+        for(OrderDetailTmp detail : listOrderItems){
+            int totVol = 0;
+            long totSal = 0;
+            try {
+                totVol = detail.getQty() * Integer.parseInt(detail.getProductGrossWeightUom());
+            }catch (Exception e){
+
+            }
+
+            try {
+                totSal = detail.getQty() * detail.getPrice();
+            }catch (Exception e){
+
+            }
+            totalVolume = totalVolume + totVol;
+            totalSales = totalSales + totSal;
+
+        }
+
+        SalesInOutResponse so = new SalesInOutResponse();
+        so.setCode(etCode.getText().toString());
+        so.setInvoiceNo(so.getCode());
+        so.setSalesStatus("NEW");
+        so.setIdParent(idOrder);
+        so.setIdSalesman(Integer.parseInt(session.getID()));
+        so.setTotVolume(totalVolume);
+        so.setTotSales(totalSales);
+        so.setIdDistributor(Integer.parseInt(session.getDistributor()));
+        so.setIdCustomer(Integer.parseInt(etCustomerId.getText().toString()));
+        so.setCreatedAt(CommonUtil.convertDate(etDate.getText().toString()));
+        Gson gson = new Gson();
+        String param = gson.toJson(so);
+        return param;
+    }
+
+    private void initData(){
+        Ordertmp order = RealmController.with(this).getOrderTmp();
+        etCode.setText(order.getCode());
+        DecimalFormat df = new DecimalFormat("###,###.##");
+        tvTotal.setText("Rp. "+df.format(order.getTotalOrder()).toString().replace(",", "."));
+        CustomerRealm customer = RealmController.with(this).getCustomer(Integer.parseInt(order.getCustId()));
+        acCustomer.setText(customer.getCode()+"-"+customer.getName());
+        etCustomerId.setText(order.getCustId().toString());
+    }
+
+    private void closeDialog(){
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
+    }
+
+    private void openDialog(){
+        dialog = ProgressDialog.show(this,"Processing","Please wait...",false,false);
     }
 }
